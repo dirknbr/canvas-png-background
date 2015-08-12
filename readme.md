@@ -1,0 +1,1 @@
+Javascript example to load an image and then remove the white background 

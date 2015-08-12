@@ -1,0 +1,79 @@
+<html>
+<head>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type='text/javascript'>
+//http://jsfiddle.net/LvsYc/
+//http://stackoverflow.com/questions/19203922/jsfiddle-wrap-in-onload
+$(window).load(function() {
+  function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            
+            reader.onload = function (e) {
+                $('#upload').attr('src', e.target.result);
+				//console.log(e,input.files[0]);
+            }
+            
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    
+	//when pic changes
+    $("#imgInp").change(function(){
+        readURL(this);
+    	
+		//console.log(document.getElementById('upload'));
+		
+		//create canvas, get pic
+		var canvas = document.getElementById("canvas"),
+		ctx = canvas.getContext("2d"),
+		image = document.getElementById("upload");
+
+		var x=image.clientWidth;
+		var y=image.clientHeight;
+		console.log(x,y);
+		
+		ctx.canvas.width=x;
+		ctx.canvas.height=y;
+		ctx.drawImage(image,0,0);
+		
+		//x by y pic	
+		var imgd = ctx.getImageData(0, 0, x, y),
+			pix = imgd.data,
+			repl = [255,255,255,0]; // transparent
+
+		// Loops through all of the pixels and modifies the components.
+		console.log(pix.length);
+		for (var i = 0, n = pix.length; i <n; i += 4) {
+			if (pix[i]==repl[0] && pix[i+1]==repl[1] && pix[i+2]==repl[2]) {
+			  pix[i+3]=repl[3];
+			}
+		}
+
+		ctx.putImageData(imgd, 0, 0);
+
+
+		var savedImageData = document.getElementById("imageData");
+		savedImageData.src = canvas.toDataURL("image/png"); 
+	});
+});
+</script>
+<style>
+body {
+background-color:beige;
+}
+</style>
+</head>
+<body>
+<form id='form1' runat='server'>
+    <input id="imgInp" type="file" /><br>
+	<img id='upload' src='#' alt=''/>
+</form>
+
+<h4>Image copied to canvas</h4>
+<canvas id="canvas"></canvas>
+
+<h4>Modified Image copied to an image tag</h4>
+<img id="imageData"/>
+
+</body>
